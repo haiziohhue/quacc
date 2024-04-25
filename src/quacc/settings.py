@@ -6,7 +6,7 @@ import os
 from importlib import util
 from pathlib import Path
 from shutil import which
-from typing import TYPE_CHECKING, Literal, Optional, Union
+from typing import TYPE_CHECKING, Literal, Optional, Union,List
 
 import psutil
 from maggma.core import Store
@@ -15,8 +15,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 if TYPE_CHECKING:
     from typing import Any
-
-
+troble= ""
 installed_engine = next(
     (
         wflow_engine
@@ -186,11 +185,10 @@ class QuaccSettings(BaseSettings):
     ESPRESSO_PSEUDO: Optional[Path] = Field(
         None, description=("Path to a pseudopotential library for espresso.")
     )
-    ESPRESSO_PRESET_DIR: Path = Field(
-        Path(__file__).parent / "calculators" / "espresso" / "presets",
+    ESPRESSO_PRESET_DIR: List[Path] = Field(
+        [Path(__file__).parent / "calculators" / "espresso" / "presets"],
         description="Path to the espresso preset directory",
     )
-
     # ---------------------------
     # Gaussian Settings
     # ---------------------------
@@ -309,12 +307,10 @@ class QuaccSettings(BaseSettings):
             """
         ),
     )
-    VASP_PRESET_DIR: Path = Field(
-        Path(__file__).parent / "calculators" / "vasp" / "presets",
+    VASP_PRESET_DIR: List[Path] = Field(
+        [Path(__file__).parent / "calculators" / "vasp" / "presets"],
         description="Path to the VASP preset directory",
     )
-
-    # VASP Settings: Custodian
     VASP_USE_CUSTODIAN: bool = Field(
         True, description="Whether Custodian should be used to run VASP"
     )
@@ -416,7 +412,6 @@ class QuaccSettings(BaseSettings):
     )
 
     # --8<-- [end:settings]
-
     @field_validator(
         "RESULTS_DIR",
         "SCRATCH_DIR",
@@ -430,11 +425,13 @@ class QuaccSettings(BaseSettings):
         "VASP_VDW",
     )
     @classmethod
-    def expand_paths(cls, v: Optional[Path]) -> Optional[Path]:
+    def expand_paths(cls, v: Optional[Union[Path,List[Path]]]) -> Optional[Union[Path,List[Path]]]:
         """Expand ~/ and $ENV_VARS in paths."""
-        if v:
+        if isinstance(v, list):
+            return [Path(os.path.expandvars(item)).expanduser() for item in v]
+        elif v:
             v = Path(os.path.expandvars(v)).expanduser()
-        return v
+            return  v
 
     @field_validator("RESULTS_DIR", "SCRATCH_DIR")
     @classmethod
