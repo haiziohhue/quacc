@@ -1,7 +1,7 @@
 <div align="center">
   <img src=https://github.com/Quantum-Accelerators/quacc/blob/main/docs/images/quacc_logo_wide.png width="300"><br>
 </div>
-1
+
 # `quacc` – The Quantum Accelerator 🦆
 
 [![codecov](https://codecov.io/gh/Quantum-Accelerators/quacc/branch/main/graph/badge.svg?token=OJaOZAH30u&precision=1)](https://codecov.io/gh/Quantum-Accelerators/quacc)
